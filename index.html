@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Parco Auto Piccirillo - Duranti</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -14,7 +14,8 @@
     --border: #9ecfb2; --card: #f5fbf7; --card2: #e4f3eb;
     --modal-bg: rgba(160,210,180,0.55); --radius: 14px; --radius-sm: 8px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
   body { background: var(--g0); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 14px; min-height: 100vh; overflow-x: hidden; }
   body::before {
     content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -148,7 +149,80 @@
   #toast.show { transform: translateY(0); opacity: 1; }
   .confirm-modal { max-width: 380px; }
   .confirm-text { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
-  @media (max-width: 768px) { header { padding: 14px 16px; } .container { padding: 16px; } .form-grid { grid-template-columns: 1fr; } table { font-size: 12px; } td, th { padding: 8px 10px; } }
+
+  /* ── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    header { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+    .header-left { flex: 1; min-width: 0; }
+    .header-title h1 { font-size: 17px; }
+    .header-title p { font-size: 10px; }
+    .header-right { width: 100%; justify-content: space-between; }
+    .db-status span { display: none; }
+    .btn-primary { padding: 8px 14px; font-size: 12px; }
+    .logo { width: 34px; height: 34px; font-size: 16px; }
+
+    #alert-banner { padding: 8px 16px; }
+    .alert-pill { font-size: 10px; padding: 3px 7px; }
+
+    .container { padding: 12px 16px; }
+
+    /* Stats: 2 colonne su mobile */
+    .stats-bar { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .stat-card { padding: 10px 12px; }
+    .stat-card .value { font-size: 22px; }
+    .stat-card .label { font-size: 9px; }
+
+    /* Tabs scrollabili */
+    .tabs { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 0; gap: 2px; }
+    .tab { padding: 8px 14px; font-size: 12px; flex-shrink: 0; }
+
+    /* Toolbar */
+    .toolbar { gap: 6px; }
+    .search-wrap { min-width: 100%; }
+    .filter-btn { padding: 6px 10px; font-size: 11px; }
+
+    /* Tabella: nascondi colonne non essenziali, mostra card-style */
+    .table-wrap { border-radius: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 600px; }
+    thead th { padding: 10px 10px; font-size: 9px; }
+    td { padding: 9px 10px; font-size: 12px; }
+    .td-group { display: none; }
+    .row-actions { opacity: 1; }
+
+    /* Scadenze list */
+    .scad-item { flex-wrap: wrap; gap: 8px; padding: 12px 14px; }
+    .scad-date { min-width: auto; font-size: 12px; }
+    .scad-type { min-width: auto; }
+    .scad-veicolo { flex: none; width: 100%; }
+    .scad-days { min-width: auto; text-align: left; }
+
+    /* Modal full-screen su mobile */
+    .modal-overlay { align-items: flex-end; }
+    .modal {
+      max-width: 100%;
+      max-height: 92vh;
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 20px 18px;
+      transform: translateY(100%);
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .form-grid { grid-template-columns: 1fr; gap: 10px; }
+    .modal-title { font-size: 17px; }
+
+    /* Confirm modal centrato */
+    .confirm-modal { max-width: 100%; border-radius: var(--radius) var(--radius) 0 0; }
+
+    /* Toast in basso al centro */
+    #toast { left: 16px; right: 16px; bottom: 16px; text-align: center; }
+  }
+
+  @media (max-width: 420px) {
+    .header-title h1 { font-size: 15px; }
+    .stats-bar { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-card .value { font-size: 20px; }
+    .tab { padding: 7px 11px; font-size: 11px; }
+    .btn { padding: 8px 12px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -242,7 +316,7 @@
       <div class="form-section-title">🛡️ Assicurazione</div>
       <div class="form-grid">
         <div class="form-group"><label class="form-label">Compagnia</label><input class="form-input" id="f-assic-comp"></div>
-        <div class="form-group"><label class="form-label">Ultima effettuazione</label><input class="form-input" type="date" id="f-assic-eff"></div>
+        <div class="form-group"><label class="form-label">Ultima effettuazione</label><input class="form-input" type="date" id="f-assic-eff" oninput="autoScad('f-assic-eff','f-assic-scad',12)"></div>
         <div class="form-group"><label class="form-label">Scadenza</label><input class="form-input" type="date" id="f-assic-scad"></div>
         <div class="form-group"><label class="form-label">Stato</label>
           <select class="form-select" id="f-assic-stato">
@@ -255,6 +329,7 @@
     <div class="form-section">
       <div class="form-section-title">💳 Bollo</div>
       <div class="form-grid">
+        <div class="form-group"><label class="form-label">Ultima effettuazione</label><input class="form-input" type="date" id="f-bollo-eff" oninput="autoScad('f-bollo-eff','f-bollo-scad',12)"></div>
         <div class="form-group"><label class="form-label">Scadenza</label><input class="form-input" type="date" id="f-bollo-scad"></div>
         <div class="form-group"><label class="form-label">Stato</label>
           <select class="form-select" id="f-bollo-stato">
@@ -267,7 +342,7 @@
     <div class="form-section">
       <div class="form-section-title">🔧 Revisione</div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">Ultima revisione</label><input class="form-input" type="date" id="f-rev-eff"></div>
+        <div class="form-group"><label class="form-label">Ultima revisione</label><input class="form-input" type="date" id="f-rev-eff" oninput="autoScad('f-rev-eff','f-rev-scad',24)"></div>
         <div class="form-group"><label class="form-label">Prossima scadenza</label><input class="form-input" type="date" id="f-rev-scad"></div>
         <div class="form-group full"><label class="form-label">Note</label><input class="form-input" id="f-note" placeholder="Note aggiuntive..."></div>
       </div>
@@ -530,6 +605,22 @@ function renderCriticita() {
 }
 
 // ── FILTERS/SORT/TABS ───────────────────────────────────
+// ── AUTO SCADENZA ───────────────────────────────────────
+window.autoScad = (effId, scadId, mesi) => {
+  const eff = document.getElementById(effId).value;
+  if (!eff) return;
+  const d = new Date(eff);
+  d.setMonth(d.getMonth() + mesi);
+  // Aggiusta per revisione: se febbraio -> marzo (es. 29 feb non esiste)
+  const scad = document.getElementById(scadId);
+  if (!scad.value) { // non sovrascrivere se già compilato manualmente
+    scad.value = d.toISOString().split('T')[0];
+  } else {
+    // Sovrascrivi sempre
+    scad.value = d.toISOString().split('T')[0];
+  }
+};
+
 window.setFilter = (f, btn) => { currentFilter = f; document.querySelectorAll('#tab-veicoli .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTable(); };
 window.setScadFilter = (f, btn) => { currentScadFilter = f; document.querySelectorAll('#tab-scadenze .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderScadenze(); };
 window.sortBy = (f) => { if (sortField===f) sortDir*=-1; else {sortField=f;sortDir=1;} renderTable(); };
@@ -545,7 +636,7 @@ window.switchTab = (tab, btn) => {
 window.openModal  = (id) => document.getElementById(id).classList.add('open');
 window.closeModal = (id) => document.getElementById(id).classList.remove('open');
 function clearForm() {
-  ['f-veicolo','f-targa','f-intestatario','f-assic-comp','f-assic-eff','f-assic-scad','f-bollo-scad','f-rev-eff','f-rev-scad','f-note'].forEach(id => document.getElementById(id).value='');
+  ['f-veicolo','f-targa','f-intestatario','f-assic-comp','f-assic-eff','f-assic-scad','f-bollo-eff','f-bollo-scad','f-rev-eff','f-rev-scad','f-note'].forEach(id => document.getElementById(id).value='');
   document.getElementById('f-gruppo').value='Persone Fisiche';
   document.getElementById('f-assic-stato').value='IN REGOLA';
   document.getElementById('f-bollo-stato').value='OK';
@@ -563,6 +654,7 @@ window.openEditModal = (id) => {
   document.getElementById('f-assic-eff').value = v.assic_eff||'';
   document.getElementById('f-assic-scad').value = v.assic_scad||'';
   document.getElementById('f-assic-stato').value = v.assic_stato||'IN REGOLA';
+  document.getElementById('f-bollo-eff').value = v.bollo_eff||'';
   document.getElementById('f-bollo-scad').value = v.bollo_scad||'';
   document.getElementById('f-bollo-stato').value = v.bollo_stato||'OK';
   document.getElementById('f-rev-eff').value = v.rev_eff||'';
@@ -582,6 +674,7 @@ window.saveVeicolo = async () => {
     assic_eff:    document.getElementById('f-assic-eff').value,
     assic_scad:   document.getElementById('f-assic-scad').value,
     assic_stato:  document.getElementById('f-assic-stato').value,
+    bollo_eff:    document.getElementById('f-bollo-eff').value,
     bollo_scad:   document.getElementById('f-bollo-scad').value,
     bollo_stato:  document.getElementById('f-bollo-stato').value,
     rev_eff:      document.getElementById('f-rev-eff').value,
